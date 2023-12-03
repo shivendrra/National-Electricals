@@ -17,21 +17,18 @@ app.post("/form", (req, res) => {
   // Function to send the email
   async function sendEmail() {
     try {
-      // Create a transporter using your SMTP settings
       const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
         secure: false,
         auth: {
-          user: 'nationalelectricalsgkp@gmail.com',
-          pass: 'NationalGKP@156',
+          user: "YOUR EMAIL",
+          pass: "PASSWORD",
         },
       });
 
-      // Render the email template with JSON data
       const emailContent = await ejs.renderFile('email_template.ejs', { data: jsonData });
 
-      // Define email options
       const mailOptions = {
         from: 'nationalelectricalsgkp@gmail.com',
         to: 'shivharsh44@gmail.com',
@@ -39,7 +36,6 @@ app.post("/form", (req, res) => {
         html: emailContent,
       };
 
-      // Send the email
       const info = await transporter.sendMail(mailOptions);
       console.log('Email sent:', info.response);
       res.send('Email sent successfully');
@@ -48,8 +44,6 @@ app.post("/form", (req, res) => {
       res.status(500).send('Error sending email');
     }
   }
-
-  // Call the function to send the email
   sendEmail();
 
   // Write the JSON data into the file

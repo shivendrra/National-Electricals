@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, ChevronRight } from 'lucide-react';
 import { Product } from '../types';
-import { getProducts } from '../services/mockData';
+import { fetchProducts } from '../services/db';
 
 const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
   <div className="flex flex-col md:flex-row gap-8 bg-white dark:bg-neutral-900 p-6 md:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 hover:shadow-lg transition-shadow">
@@ -18,7 +18,7 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
       </p>
       
       <div className="grid grid-cols-2 gap-4 mb-8">
-        {Object.entries(product.specifications).map(([key, value]) => (
+        {product.specifications && Object.entries(product.specifications).map(([key, value]) => (
           <div key={key} className="border-l-2 border-accent/30 pl-3">
             <span className="block text-xs text-neutral-500 uppercase tracking-wider">{key}</span>
             <span className="font-medium text-neutral-800 dark:text-neutral-200">{value}</span>
@@ -42,9 +42,20 @@ const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
 
 const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setProducts(getProducts());
+    const load = async () => {
+        try {
+            const data = await fetchProducts();
+            setProducts(data);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    }
+    load();
   }, []);
 
   return (
@@ -57,11 +68,18 @@ const Products = () => {
           </p>
         </div>
 
-        <div className="space-y-8">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {loading ? (
+             <div className="flex justify-center py-20">
+                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+             </div>
+        ) : (
+            <div className="space-y-8">
+            {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+            ))}
+            {products.length === 0 && <p className="text-center text-neutral-500">No products available at the moment.</p>}
+            </div>
+        )}
 
         <div className="mt-20 p-12 bg-accent rounded-3xl text-center text-white relative overflow-hidden">
           <div className="relative z-10">

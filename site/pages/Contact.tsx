@@ -1,7 +1,37 @@
-import React from 'react';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
+import { sendMessage } from '../services/db';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    service: 'Product Inquiry',
+    message: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await sendMessage(formData);
+      setSuccess(true);
+      setFormData({ firstName: '', lastName: '', email: '', service: 'Product Inquiry', message: '' });
+      setTimeout(() => setSuccess(false), 5000);
+    } catch (error) {
+      console.error("Error sending message", error);
+      alert("Failed to send message. Please try again.");
+    }
+    setLoading(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-neutral-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -53,42 +83,53 @@ const Contact = () => {
 
           {/* Form Side */}
           <div className="bg-neutral-50 dark:bg-neutral-900 p-8 md:p-12 rounded-3xl border border-neutral-100 dark:border-neutral-800">
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">First Name</label>
-                  <input type="text" className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="John" />
+            {success ? (
+              <div className="h-full flex flex-col items-center justify-center text-center py-12 animate-in fade-in zoom-in">
+                <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
+                  <CheckCircle size={40} />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Last Name</label>
-                  <input type="text" className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="Doe" />
+                <h3 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2">Message Sent!</h3>
+                <p className="text-neutral-500">Thank you for contacting us. We will get back to you shortly.</p>
+                <button onClick={() => setSuccess(false)} className="mt-8 text-accent font-medium hover:underline">Send another message</button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">First Name</label>
+                    <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="John" required />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Last Name</label>
+                    <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="Doe" required />
+                  </div>
                 </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Email</label>
-                <input type="email" className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="john@example.com" />
-              </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Email</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="john@example.com" required />
+                </div>
 
-               <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Service of Interest</label>
-                <select className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white">
-                  <option>Product Inquiry</option>
-                  <option>Maintenance Service</option>
-                  <option>Consulting</option>
-                  <option>Other</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Service of Interest</label>
+                  <select name="service" value={formData.service} onChange={handleChange} className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white">
+                    <option>Product Inquiry</option>
+                    <option>Maintenance Service</option>
+                    <option>Consulting</option>
+                    <option>Other</option>
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Message</label>
-                <textarea rows={4} className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="Tell us a little about your project..."></textarea>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Message</label>
+                  <textarea name="message" value={formData.message} onChange={handleChange} rows={4} className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 focus:ring-2 focus:ring-accent focus:border-transparent outline-none transition-all dark:text-white" placeholder="Tell us a little about your project..." required></textarea>
+                </div>
 
-              <button type="submit" className="w-full bg-accent text-white font-medium py-4 rounded-lg hover:bg-opacity-90 transition-opacity">
-                Send Message
-              </button>
-            </form>
+                <button type="submit" disabled={loading} className="w-full bg-accent text-white font-medium py-4 rounded-lg hover:bg-opacity-90 transition-opacity disabled:opacity-70 flex items-center justify-center gap-2">
+                  {loading ? 'Sending...' : 'Send Message'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
         

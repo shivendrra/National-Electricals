@@ -19,6 +19,13 @@ export interface BlogPost {
   excerpt: string;
 }
 
+export interface GalleryImage {
+  id: string;
+  imageUrl: string;
+  caption?: string;
+  date: string;
+}
+
 export interface Service {
   title: string;
   description: string;
@@ -34,4 +41,15 @@ export interface TeamMember {
 export interface Client {
   name: string;
   logo: string;
+}
+
+export interface ContactMessage {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  service: string;
+  message: string;
+  read: boolean;
+  createdAt: any;
 }

@@ -25,7 +25,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        if (user.email && ALLOWED_EMAILS.includes(user.email)) {
+        const email = user.email?.toLowerCase();
+        if (email && ALLOWED_EMAILS.includes(email)) {
           setCurrentUser(user);
         } else {
           await signOut(auth);

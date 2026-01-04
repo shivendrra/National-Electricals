@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, orderBy, Timestamp } from 'firebase/firestore';
-import { Product, BlogPost } from '../types';
+import { Product, BlogPost, GalleryImage, ContactMessage } from '../types';
 
 // Products
 export const fetchProducts = async (): Promise<Product[]> => {
@@ -37,17 +37,23 @@ export const deleteBlog = async (id: string) => {
   await deleteDoc(doc(db, 'blogs', id));
 };
 
+// Gallery
+export const fetchGallery = async (): Promise<GalleryImage[]> => {
+  const q = query(collection(db, 'gallery'), orderBy('date', 'desc'));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryImage));
+};
+
+export const createGalleryImage = async (image: Omit<GalleryImage, 'id'>) => {
+  await addDoc(collection(db, 'gallery'), { ...image, createdAt: Timestamp.now() });
+};
+
+export const deleteGalleryImage = async (id: string) => {
+  await deleteDoc(doc(db, 'gallery', id));
+};
+
 // Messages
-export interface ContactMessage {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  service: string;
-  message: string;
-  createdAt: any;
-  read: boolean;
-}
+export { type ContactMessage }; // Re-exporting for compatibility if needed
 
 export const sendMessage = async (data: Omit<ContactMessage, 'id' | 'createdAt' | 'read'>) => {
   await addDoc(collection(db, 'messages'), {

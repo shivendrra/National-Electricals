@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { auth } from '../services/firebase';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  GoogleAuthProvider, 
+  signInWithPopup
+} from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Info } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,16 +16,52 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const ALLOWED_EMAILS = ['nationalelectricalsgkp@gmail.com', 'shivharsh44@gmail.com'];
+  const DEFAULT_PASSWORD = '9936954894';
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       navigate('/admin');
     } catch (err: any) {
-      setError('Failed to log in. Check credentials.');
-      console.error(err);
+      console.error("Login Attempt Failed:", err.code, err.message);
+      
+      const errorCode = err.code;
+
+      // 1. Handle Domain Unauthorized
+      if (errorCode === 'auth/unauthorized-domain') {
+        setError(`Domain Error: The domain '${window.location.hostname}' is not authorized. Add it in Firebase Console > Authentication > Settings > Authorized Domains.`);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Handle First-Time Setup (Auto-create user if allowed and using default password)
+      // Only attempt this if the error implies the user doesn't exist
+      if ((errorCode === 'auth/user-not-found' || errorCode === 'auth/invalid-credential') && 
+          ALLOWED_EMAILS.includes(email.toLowerCase()) && 
+          password === DEFAULT_PASSWORD) {
+        try {
+          // Try to create the user since sign-in failed
+          await createUserWithEmailAndPassword(auth, email, password);
+          navigate('/admin');
+          return;
+        } catch (createErr: any) {
+           setError('Failed to create account: ' + createErr.message);
+        }
+      } else {
+        // Standard error handling
+        if (errorCode === 'auth/invalid-credential' || errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password') {
+           setError('Invalid email or password.');
+        } else if (errorCode === 'auth/too-many-requests') {
+           setError('Too many failed attempts. Please try again later.');
+        } else {
+           setError(err.message);
+        }
+      }
     }
     setLoading(false);
   };
@@ -30,11 +71,26 @@ const Login = () => {
     setError('');
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      navigate('/admin');
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userEmail = user.email?.toLowerCase();
+      
+      if (userEmail && ALLOWED_EMAILS.includes(userEmail)) {
+        navigate('/admin');
+      } else {
+        // If google login succeeds but email is not allowed, sign them out immediately
+        await auth.signOut();
+        setError('Access Denied: This email is not authorized for Admin access.');
+      }
     } catch (err: any) {
-      setError('Google Sign-In failed.');
-      console.error(err);
+      console.error("Google Login Error:", err);
+      if (err.code === 'auth/unauthorized-domain') {
+        setError(`Domain Error: The domain '${window.location.hostname}' is not authorized. Add it in Firebase Console.`);
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        setError('Sign-in cancelled.');
+      } else {
+        setError('Google Sign-In failed. ' + err.message);
+      }
     }
     setLoading(false);
   };
@@ -47,7 +103,12 @@ const Login = () => {
            <p className="text-neutral-500 mt-2">National Electricals Management</p>
         </div>
 
-        {error && <div className="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 text-sm">{error}</div>}
+        {error && (
+          <div className={`border px-4 py-3 rounded mb-6 text-sm flex gap-2 items-start ${error.includes('Domain Error') ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-red-50 border-red-200 text-red-700'}`}>
+            <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
 
         <form onSubmit={handleEmailLogin} className="space-y-6">
           <div>
@@ -109,6 +170,11 @@ const Login = () => {
           </svg>
           Sign in with Google
         </button>
+        
+        <div className="mt-6 flex gap-2 text-xs text-neutral-400 bg-neutral-50 dark:bg-neutral-800/50 p-3 rounded-lg border border-neutral-100 dark:border-neutral-800">
+           <Info size={16} className="flex-shrink-0" />
+           <p>First time login? Use the default password provided by the administrator. You can change it in settings later.</p>
+        </div>
       </div>
     </div>
   );

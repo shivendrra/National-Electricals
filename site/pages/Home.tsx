@@ -69,24 +69,58 @@ const Services = () => (
 );
 
 const Clients = () => (
-  <section className="py-24 bg-neutral-50 dark:bg-neutral-900">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 className="font-serif text-4xl md:text-5xl font-bold mb-12 text-neutral-900 dark:text-white">Trusted By</h2>
-      <div className="flex flex-wrap justify-center gap-12 items-center opacity-70">
-        {CLIENTS.map((client, idx) => (
-          <div key={idx} className="flex flex-col items-center gap-2 group">
-             {/* Placeholder for Logo */}
-             <div className="w-32 h-20 flex items-center justify-center bg-white dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700 shadow-sm group-hover:border-accent transition-colors">
-                <span className="font-serif font-bold text-xl text-neutral-400 group-hover:text-accent">{client.logo}</span>
+  <section className="py-24 bg-neutral-50 dark:bg-neutral-900 overflow-hidden">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-16">
+      <h2 className="font-serif text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white">Trusted By</h2>
+    </div>
+    
+    <div className="relative w-full">
+      {/* Gradient Fade Effects */}
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-neutral-50 dark:from-neutral-900 to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-neutral-50 dark:from-neutral-900 to-transparent z-10 pointer-events-none"></div>
+
+      {/* Marquee Container */}
+      <div className="flex animate-marquee hover:pause items-center">
+        {/* Render multiple sets of clients to ensure seamless looping on large screens */}
+        {[...CLIENTS, ...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, idx) => (
+          <div key={idx} className="flex-shrink-0 px-12 group relative">
+             <div className="w-40 h-24 flex items-center justify-center relative transition-transform duration-300 group-hover:scale-110">
+                <img 
+                  src={client.logo} 
+                  alt={`${client.name} logo`} 
+                  className="w-full h-full object-contain filter grayscale-0 drop-shadow-sm" 
+                />
              </div>
-             <span className="text-sm font-medium text-neutral-500">{client.name}</span>
+             
+             {/* Hover Name Popup */}
+             <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-20">
+                <div className="bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 text-xs font-bold py-1.5 px-3 rounded-lg shadow-xl whitespace-nowrap relative">
+                  {client.name}
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-neutral-900 dark:bg-white rotate-45"></div>
+                </div>
+             </div>
           </div>
         ))}
       </div>
-      <div className="mt-12">
-        <p className="text-neutral-500 italic">and many more...</p>
-      </div>
     </div>
+    
+    <div className="mt-16 text-center">
+      <p className="text-neutral-500 italic">and many more...</p>
+    </div>
+
+    <style>{`
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-25%); }
+      }
+      .animate-marquee {
+        animation: marquee 40s linear infinite;
+        width: fit-content;
+      }
+      .hover\\:pause:hover {
+        animation-play-state: paused;
+      }
+    `}</style>
   </section>
 );
 

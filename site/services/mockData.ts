@@ -84,18 +84,19 @@ export const SERVICES: Service[] = [
 ];
 
 export const CLIENTS: Client[] = [
-  { name: "Indraprastha Gas Limited", logo: "IGL" },
-  { name: "Bhusal Group", logo: "BG" },
-  { name: "Little Flower School", logo: "LFS" },
-  { name: "Splice Laminates", logo: "SPL" },
-  { name: "Gharana", logo: "GHR" },
-  { name: "Galant", logo: "GLT" },
+  { name: "UP Government", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/upgov.svg" },
+  { name: "Indraprastha Gas Limited", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/igl.png" },
+  { name: "Bhusal Group", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/bhusal.png" },
+  { name: "Little Flower School", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/lfs.png" },
+  { name: "Splice Laminates", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/splice.png" },
+  { name: "Gharana", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/gharana.jpg" },
+  { name: "Galant", logo: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/SVG/gallant.png" },
 ];
 
 export const TEAM: TeamMember[] = [
-  { name: "Harihar Singh", role: "Co-Founder & Chairman", image: "https://picsum.photos/id/1005/300/400" },
-  { name: "Birendra Kumar Singh", role: "Co-Founder & Vice-Chairman", image: "https://picsum.photos/id/1012/300/400" },
-  { name: "Sanjay Singh", role: "Managing Director", image: "https://picsum.photos/id/1025/300/400" },
+  { name: "Harihar Singh", role: "Co-Founder & Chairman", image: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/Pictures/Head1.png" },
+  { name: "Birendra Kumar Singh", role: "Co-Founder & Vice-Chairman", image: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/Pictures/Head2.png" },
+  { name: "Sanjay Singh", role: "Managing Director", image: "https://raw.githubusercontent.com/shivendrra/National-Electricals/dev/assets/Pictures/Head3.png" },
 ];
 
 // Local Storage Helpers

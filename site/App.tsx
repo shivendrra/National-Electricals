@@ -33,8 +33,10 @@ const App = () => {
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/blog" element={<Layout><Blog /></Layout>} />
           <Route path="/contact" element={<Layout><Contact /></Layout>} />
+          
           {/* Login Page */}
           <Route path="/login" element={<Layout><Login /></Layout>} />
+          
           {/* Protected Admin Route */}
           <Route path="/admin" element={
             <PrivateRoute>

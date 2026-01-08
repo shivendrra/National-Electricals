@@ -45,11 +45,15 @@ const About = () => {
            
            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
              {TEAM.map((member, idx) => (
-               <div key={idx} className="flex flex-col items-center text-center">
-                 <div className="w-48 h-56 bg-neutral-200 rounded-lg overflow-hidden mb-6 shadow-md">
-                   <img src={member.image} alt={member.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
+               <div key={idx} className="flex flex-col items-center text-center group cursor-default">
+                 <div className="w-48 h-56 bg-neutral-200 rounded-lg overflow-hidden mb-6 shadow-md relative">
+                   <img 
+                      src={member.image} 
+                      alt={member.name} 
+                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 ease-in-out" 
+                   />
                  </div>
-                 <h3 className="font-serif text-2xl font-bold text-neutral-900 dark:text-white">{member.name}</h3>
+                 <h3 className="font-serif text-2xl font-bold text-neutral-900 dark:text-white group-hover:text-accent transition-colors duration-300">{member.name}</h3>
                  <span className="text-accent font-medium mt-1">{member.role}</span>
                </div>
              ))}

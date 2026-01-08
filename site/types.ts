@@ -23,7 +23,7 @@ export interface GalleryImage {
   id: string;
   imageUrl: string;
   caption?: string;
-  date: string;
+  date?: string;
 }
 
 export interface Service {

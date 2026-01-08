@@ -53,3 +53,17 @@ export interface ContactMessage {
   read: boolean;
   createdAt: any;
 }
+
+export interface QuoteRequest {
+  id: string;
+  productId: string;
+  productName: string;
+  name: string;
+  email: string;
+  phone: string;
+  company?: string;
+  quantity: number;
+  message?: string;
+  status: 'pending' | 'contacted';
+  createdAt: any;
+}
